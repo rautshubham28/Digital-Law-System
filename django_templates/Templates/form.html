@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% block head %}
+<style type="text/css">
+	html, body {
+		height: 100%;
+		background-color: lightgray;
+	}
+	.navbar-brand{
+		color: black !important;
+	}
+	a:hover {
+		text-decoration: none;
+		color: #9457eb;
+		cursor: pointer;
+	}
+	.navbar{
+		background-color: #fff !important;
+		top: 0px !important;
+		height: 70px !important;
+	}
+	.nav-link{
+		color: black !important;
+	}
+	#preview {
+		width: 210mm;
+		height: 297mm;
+		font-size: 18px;
+		overflow-y: auto;
+	}
+</style>
+{% endblock %}
+{% block content %}
+	<div class="container-fluid " style="margin-top: 80px;">
+		<div class="row">
+			<div class="col-lg-12 col-xl-3 border-secondary border-end p-3 overflow-y-auto" id="inputs" style="height: calc(100vh - 70px); max-height: calc(100vh - 70px);">
+				<div class="mx-auto">
+					<div class="input-group my-1">
+						<div class="input-group-prepend">
+							<span class="input-group-text">Letter Date</span>
+						</div>
+						<input class="form-control" type="date" name="date" onchange="update(this, true);" onfocus="highlight(this, true, true);" onblur="highlight(this, false, true);"><br />
+					</div>
+					<div class="input-group my-1">
+						<input class="form-control" type="text" name="sender-name" onkeyup="update(this, false);" onfocus="highlight(this, true, false);" onblur="highlight(this, false, false);" placeholder="Sender's Name"><br />
+					</div>
+					<div class="input-group my-1">
+						<input class="form-control" type="text" name="sender-addr" onkeyup="update(this, true);" onfocus="highlight(this, true, true);" onblur="highlight(this, false, true);" placeholder="Sender's Address"><br />
+					</div>
+					<div class="input-group my-1">
+						<input class="form-control" type="email" name="sender-email" onkeyup="update(this, true);" onfocus="highlight(this, true, true);" onblur="highlight(this, false, true);" placeholder="Sender's Email"><br />
+					</div>
+					<div class="input-group my-1">
+						<input class="form-control" type="text" name="recipient-name" onkeyup="update(this, false);" onfocus="highlight(this, true, false);" onblur="highlight(this, false, false);" placeholder="Recipient's Name"><br />
+					</div>
+					<div class="input-group my-1">
+						<input class="form-control" type="text" name="recipient-addr" onkeyup="update(this, true);" onfocus="highlight(this, true, true);" onblur="highlight(this, false, true);" placeholder="Recipient's Address"><br />
+					</div>
+					<div class="input-group my-1">
+						<input class="form-control" type="email" name="recipient-email" onkeyup="update(this, true);" onfocus="highlight(this, true, true);" onblur="highlight(this, false, true);" placeholder="Recipient's Email"><br />
+					</div>
+					{% block inputs %}{% endblock %}
+					<div class="p-2 my-1 text-center bg-white">
+						<label>Font Size (<span id="font-size" class="text-muted">18</span>)</label>
+						<input
+							class="form-range" min="12" max="24" type="range" value="18"
+							onchange="document.getElementById('preview').style.fontSize = this.value+'px'; document.getElementById('font-size').innerHTML = this.value;"
+						>
+						<button class="btn btn-primary ml-5" onclick="save(this);" download="tenancy_notice.jpg">Save</button>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-12 col-xl-9 overflow-y-auto h-100 w-75" style="height: calc(100vh - 70px); max-height: calc(100vh - 70px);">
+				<div id="preview" class="card mx-auto p-5">
+					<div class="text-right">
+						Date: <span id="date">______</span>
+					</div>
+					<div>
+						From:<br />
+						<b><span class="sender-name">______</span><br /></b>
+						<span id="sender-addr">______</span><br />
+						<span id="sender-email">______</span><br />
+					</div>
+					<div class="d-flex justify-content-end">
+						<div>
+							To:<br />
+							<b><span class="recipient-name">______</span><br /></b>
+							<span id="recipient-addr">______</span><br />
+							<span id="recipient-email">______</span><br />
+						</div>
+					</div>
+					{% block preview %}{% endblock %}
+					Yours sincerely,<br />
+					<b><span class="sender-name">______</span></b>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+{% block scripts %}
+	<script type="text/javascript">
+		// alert('Please use Light Mode before Saving the Template')
+		const element = document.getElementById('inputs')
+		if(element.scrollHeight > element.clientHeight) {
+			element.classList.remove('d-flex')
+			element.classList.remove('align-items-center')
+		}
+		function update(locator, type) {
+			if(type) {
+				document.getElementById(locator.name).innerHTML = (locator.value ? locator.value.replace(/\n/g, "<br />") : "______")
+			}
+			else {
+				document.querySelectorAll('.' + locator.name).forEach((element) => {
+					element.innerHTML = (locator.value ? locator.value.replace(/\n/g, "<br />") : "______")
+				})
+			}
+		}
+		function highlight(locator, toggle, type) {
+			if(type) {
+				document.getElementById(locator.name).style.background = (toggle ? 'yellow' : '')
+			}
+			else {
+				document.querySelectorAll('.' + locator.name).forEach((element) => {
+					element.style.background = (toggle ? 'yellow' : '')
+				})
+			}
+		}
+		function save(anchor) {
+			html2canvas(document.getElementById('preview')).then(function(canvas) {
+				var imgData = canvas.toDataURL('image/png');              
+				var doc = new jspdf.jsPDF('p', 'mm');
+				doc.addImage(imgData, 'PNG', 0, 0);
+				doc.save("{{ request.user.first_name }}_{{ request.user.last_name }}_" + "{{ request.path }}".slice(10)+'.pdf');
+			});
+		}
+	</script>
+{% endblock %}

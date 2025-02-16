@@ -1,0 +1,109 @@
+{% extends 'Templates/form.html' %}
+{% block title %}Right to Information{% endblock %}
+
+{% block head %}
+{{ block.super }}
+
+{% endblock %}
+
+{% block inputs %}
+	<!-- update(this, <type: id-true, class-false>) -->
+	<!-- highlight(this, <toggle: on-true, off-false>, <type: id-true, class-false>) -->
+	<div class="input-group my-1">
+		<textarea class="form-control form-control-sm" name="information-description" onkeyup="update(this, true);" onfocus="highlight(this, true, true);" onblur="highlight(this, false, true);" placeholder="Information Description"></textarea>
+	</div>
+	<div class="input-group my-1">
+		<input class="form-control" type="number" name="payment-fee" onkeyup="update(this, true);" onfocus="highlight(this, true, true);" onblur="highlight(this, false, true);" placeholder="Payment Fee"><br />
+	</div>
+	<div class="input-group my-1">
+		<input class="form-control" type="text" name="payment-mode" onkeyup="update(this, true);" onfocus="highlight(this, true, true);" onblur="highlight(this, false, true);" placeholder="Payment Mode"><br />
+	</div>
+	<div class="input-group my-1">
+		<input class="form-control" type="text" name="payment-favouring" onkeyup="update(this, true);" onfocus="highlight(this, true, true);" onblur="highlight(this, false, true);" placeholder="Payment Favouring"><br />
+	</div>
+	<div class="input-group my-1">
+		<div class="input-group-prepend">
+			<span class="input-group-text">Payment Date</span>
+		</div>
+		<input class="form-control" type="date" name="payment-date" onchange="update(this, true);" onfocus="highlight(this, true, true);" onblur="highlight(this, false, true);"><br />
+	</div>
+	<div class="input-group my-1">
+		<div class="input-group-prepend">
+			<span class="input-group-text">Document Format</span>
+		</div>
+		<select class="custom-select custom-select-lg" id="document-format-input">
+			<option selected value="1">Photocopy</option>
+			<option value="0">CD</option>
+		</select>
+	</div>
+	<span class="document-format">
+		<div class="input-group my-1">
+			<input class="form-control" type="number" name="photocopy-fee" onkeyup="update(this, true);" onfocus="highlight(this, true, true);" onblur="highlight(this, false, true);" placeholder="Photocopy Fee"><br />
+		</div>
+		<div class="input-group my-1">
+			<input class="form-control" type="number" name="photocopy-pages" onkeyup="update(this, true);" onfocus="highlight(this, true, true);" onblur="highlight(this, false, true);" placeholder="Photocopy Pages"><br />
+		</div>
+	</span>
+	<span class="document-format d-none">
+		<div class="input-group my-1">
+			<input class="form-control" type="number" name="digital-fee" onkeyup="update(this, true);" onfocus="highlight(this, true, true);" onblur="highlight(this, false, true);" placeholder="CD Fee"><br />
+		</div>
+	</span>
+	<div class="input-group my-1">
+		<div class="input-group-prepend">
+			<span class="input-group-text">Below Poverty Line?</span>
+		</div>
+		<select class="custom-select custom-select-lg" name="bpl" onchange="update(this, true);" id="bpl-input">
+			<option selected value="Yes">Yes</option>
+			<option value="No">No</option>
+		</select>
+	</div>
+	<span class="bpl-toggle">
+		<div class="input-group my-1">
+			<div class="input-group-prepend">
+				<span class="input-group-text">BPL Proof attached?</span>
+			</div>
+			<select class="custom-select custom-select-lg" name="bpl-proof" onchange="update(this, true);">
+				<option selected value="Yes">Yes</option>
+				<option value="No">No</option>
+			</select>
+		</div>
+	</span>
+{% endblock %}
+
+{% block preview %}
+	<b>RE: Request for Information under Right to Information Act 2005.</b><br /><br />
+	Sir,<br />
+	<span style="margin-left: 5rem;">I, <span class="sender-name">______</span>, wish to seek information as under:</span><br />
+	<span id="information-description">______</span><br /><br />
+	I hereby inform that following formalities have been completed by me:<br />
+	<ol style="margin-top: 1rem;" >
+		<li>That I have deposited the requisite fee of Rs. <span id="payment-fee">______</span>/- by way of Cash / banker cheque / Draft / Postal Order/ others <span id="payment-mode">______</span> ) favoring <span id="payment-favouring">______</span> dated <span id="payment-date">______</span>.</li>
+
+		<li class="document-format">I need the photocopy of the documents and I had deposited the cost of the photocopy of Rs. <span id="photocopy-fee">______</span>/- for <span id="photocopy-pages">______</span> pages.</li>
+
+		<li class="document-format d-none">I had deposited sum of Rs. <span id="cd-fee">______</span>/- for the charges of CD.</li>
+
+		<li>That I belong to Category of Below Poverty Line (BPL): <span id="bpl">Yes</span>.<span class="bpl-toggle"><br />I am attaching the valid photocopy of the certificate: <span id="bpl-proof">Yes</span>.</span></li>
+
+		<li>That I am ‘Citizen’ of India and I am asking the information as ‘Citizen’.</li>
+
+		<li>I assure that I shall not allow/cause to use/pass/share/display/circulate the information received in any case and under any circumstances, with any person or in any manner which would be detrimental to the Unity and Sovereignty or against the Interest of India.</li>
+	</ol>
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+	<script type="text/javascript">
+		document.getElementById('document-format-input').addEventListener('change', function() {
+			document.querySelectorAll('.document-format').forEach((element) => {
+				element.classList.toggle('d-none')
+			})
+		})
+		document.getElementById('bpl-input').addEventListener('change', function() {
+			document.querySelectorAll('.bpl-toggle').forEach((element) => {
+				element.style.display = (this.value == 'Yes' ? '' : 'none')
+			})
+		})
+	</script>
+{% endblock %}

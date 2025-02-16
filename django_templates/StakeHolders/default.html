@@ -1,0 +1,82 @@
+<div class="row">
+	<div class="col-sm-12 col-md-6 col-xl-4">
+		<div class="card m-20">
+			<div class="border rounded p-20 h-200">
+				<div class="text-center">
+					<h5><b><i class="fas fa-user"></i> User Info</b></h5>
+				</div>
+				<p>First Name: {{ user.first_name }}</p>
+				<p>Last Name: {{ user.last_name }}</p>
+				<p>Email: {{ user.email }}</p>
+			</div>
+		</div>
+	</div>
+	<div class="col-sm-12 col-md-6 col-xl-4">
+		<div class="card m-20">
+			<div class="border rounded p-20 h-200">
+				<div class="text-center">
+					<h5><b><i class="fas fa-key"></i> Update Credentials</b></h5>
+					<form method="POST">
+						{% csrf_token %}
+						<div class="row pb-5">
+							<div class="col-6 pr-5">
+								<input type="password" class="form-control form-control-sm" placeholder="Old Password" name="old" required>
+							</div>
+							<div class="col-6 pl-5">
+								<input type="password" class="form-control form-control-sm" placeholder="New Password" name="new" required>
+							</div>
+						</div>
+						<div class="row pt-5">
+							<div class="col-6 pr-5">
+								<input type="password" class="form-control form-control-sm" placeholder="Confirm Password" name="confirm" required>
+							</div>
+							<div class="col-6 pl-5">
+								<button type="submit" class="btn btn-primary btn-sm btn-block">Update</button>
+							</div>
+						</div>
+						<div class="text-center">{{ message|safe }}</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-sm-12 col-md-6 col-xl-4">
+		<div class="card m-20">
+			<div class="border rounded p-20 h-200">
+				<div class="text-center">
+					<h5><b><i class="fas fa-robot"></i> Virtual Advisor</b></h5>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-sm-12 col-md-6 col-xl-4">
+		<div class="card m-20">
+			<div class="border rounded p-20 h-200">
+				<div class="text-center">
+					<h5><b><i class="fas fa-passport"></i> E-License</b></h5>
+					Applications Submitted: {{ content.applications }}
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-sm-12 col-md-6 col-xl-4">
+		<div class="card m-20">
+			<div class="border rounded p-20 h-200">
+				<div class="text-center">
+					<h5><b><i class="fas fa-comments"></i> Connect</b></h5>
+					Lawyers Contacted: {{ content.stakeholders }}
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-sm-12 col-md-6 col-xl-4">
+		<div class="card m-20">
+			<div class="border rounded p-20 h-200">
+				<div class="text-center">
+					<h5><b><i class="fas fa-file-invoice"></i> Petitions</b></h5>
+					Petitions Submitted: {{ content.petitions }}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

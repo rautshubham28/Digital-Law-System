@@ -1,0 +1,72 @@
+{% extends 'Templates/form.html' %}
+{% block title %}Resignation{% endblock %}
+{% block inputs %}
+	<div class="input-group my-1">
+		<input class="form-control" type="text" name="designation" onkeyup="update(this, false);" onfocus="highlight(this, true, false);" onblur="highlight(this, false, false);" placeholder="Designation"><br />
+	</div>
+	<div class="input-group my-1">
+		<div class="input-group-prepend">
+			<span class="input-group-text">Resigning</span>
+		</div>
+		<select class="custom-select custom-select-lg" id="resign-input">
+			<option selected value="1">After Notice Period</option>
+			<option value="0">Before Notice Period</option>
+		</select>
+	</div>
+	<div class="input-group my-1">
+		<input class="form-control" type="text" name="notice-period" onkeyup="update(this, false);" onfocus="highlight(this, true, false);" onblur="highlight(this, false, false);" placeholder="Notice Period (Days/Months)"><br />
+	</div>
+	<div class="input-group my-1">
+		<div class="input-group-prepend">
+			<span class="input-group-text">Notice Period End</span>
+		</div>
+		<input class="form-control" type="date" name="notice-period-end" onchange="update(this, false);" onfocus="highlight(this, true, false);" onblur="highlight(this, false, false);"><br />
+	</div>
+	<div class="input-group my-1 resign d-none">
+		<textarea class="form-control form-control-sm" name="early-description" onkeyup="update(this, true);" onfocus="highlight(this, true, true);" onblur="highlight(this, false, true);" placeholder="Early Termination Description"></textarea>
+	</div>
+{% endblock %}
+
+{% block preview %}
+	<b>RE: Resignation from the position of <span class="designation">______</span> of the company</b><br /><br />
+
+	I hereby tender my resignation from the position of <span class="designation">______</span>. Please accept this letter as notice of my resignation.<br /><br />
+
+	Thank you for the support and opportunities that you have provided me during my employment. I'm incredibly grateful to <span class="recipient-name">______</span> for encouragement in pursuing my professional and personal growth.<br /><br />
+
+	<!-- ### if working till end of notice period -->
+	<div class="resign">
+		As per the terms of my contract, I intend to continue working through to the end of my notice period of <span class="notice-period">______</span>.<br /><br />
+
+		Consequently, I calculate my last day of work to be <span class="notice-period-end">______</span>.<br /><br />
+
+		Please confirm acceptance of my resignation and issue my relieving letter. Please also feel free to contact me to discuss any other matters which may need to be addressed prior to my departure.
+	</div>
+	<!-- ### end -->
+
+	<!-- ### if stopping before end of notice period -->
+
+	<div class="resign d-none">
+		I understand that in accordance with my employment contract I have a notice period of: <span class="notice-period">______</span>.<br /><br />
+
+		However, I request that this notice period be reduced such that my final day of work is <span class="notice-period-end">______</span> due to: 
+		<span id="early-description">______</span><br /><br />
+
+		<!-- I can help the company in the following manner till <span class="notice-period-end">______</span> due to:<br /> -->
+
+		Please contact me using the details above to confirm acceptance of my resignation and to confirm acceptance of <span class="notice-period-end">______</span> as my last day of work and issue my relieving letter. Please also feel free to contact me to discuss any other matters which may need to be addressed prior to my departure.
+	</div>
+	<!-- ### end -->
+	<br />
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+	<script type="text/javascript">
+		document.getElementById('resign-input').addEventListener('change', function() {
+			document.querySelectorAll('.resign').forEach((element) => {
+				element.classList.toggle('d-none')
+			})
+		})
+	</script>
+{% endblock %}

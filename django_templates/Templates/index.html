@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}Templates{% endblock %}
+
+{% block head %}
+	<style type="text/css">
+		html, body {
+			/* height: 100%; */
+			background-color: lightgray;
+		}
+		.navbar-brand{
+			color: black !important;
+		}
+		a:hover {
+			text-decoration: none;
+			color: #9457eb;
+			cursor: pointer;
+		}
+		.navbar{
+			background-color: #fff !important;
+			top: 0px !important;
+			height: 70px !important;
+		}
+		.nav-link{
+			color: black !important;
+		}
+	</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-wrapper" style="margin-top: 5%;">
+	<div class="row">
+		<div class="col-8 offset-2">
+			<div class="row">
+				<div class="col-12 col-md-4">
+					<div class="card py-5 mx-0 h-100 text-center" style="clip-path: polygon(0% 0%, 80% 0%, 100% 50%, 80% 100%, 0% 100%);">
+						<h4 class="text-danger m-20">Step 1</h4>
+						<span class="font-italic">Search for a Template</span>
+					</div>
+				</div>
+				<div class="col-12 col-md-4">
+					<div class="card py-5 mx-0 h-100 text-center" style="clip-path: polygon(0% 0%, 80% 0%, 100% 50%, 80% 100%, 0% 100%, 20% 50%); padding: 0 7rem;">
+						<h4 class="text-secondary m-20">Step 2</h4>
+						<span class="font-italic">Fill the template and Download it</span>
+					</div>
+				</div>
+				<div class="col-12 col-md-4">
+					<div class="card py-5 mx-0 h-100 text-center" style="clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 20% 50%); padding-left: 7rem;">
+						<h4 class="text-success m-20">Step 3</h4>
+						<span class="font-italic">Submit it to respective person/authority</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	{% if user.is_authenticated %}
+		<div class="row mt-5">
+			<div class="col-8 offset-2">
+				<div class="input-group">
+					<input type="text" class="form-control mr-5" placeholder="Enter template to search" id="search">
+					<button class="btn btn-primary" onclick="search();">Search</button>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-8 offset-2">
+				<h4 id="result-container" class="mt-5 bg-white d-none overflow-y-auto rounded p-5" style="max-height: 20rem;"></h4>
+			</div>
+		</div>
+		<!-- <div class="row">
+			<div class="col-8 offset-2">
+				<div class="card mx-auto text-center">
+					<div class="w-75 mx-auto">
+						<div class="toggle">
+							<div class="row">
+								<div class="col-10">
+									<div class="input-group">
+										<input type="text" class="form-control" placeholder="Enter template to search" id="search">
+									</div>
+								</div>
+								<div class="col-2 text-right">
+									<button class="btn btn-primary" onclick="search();">Search</button>
+								</div>
+							</div>
+							<div id="result-container" class="mt-20 d-none overflow-y-auto rounded p-20" style="max-height: 20rem;"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div> -->
+	{% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+	{% if user.is_authenticated %}
+		<script type="text/javascript">
+			function search() {
+				fetch('/template/', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						"X-CSRFToken": "{{ csrf_token }}"
+					},
+					body: JSON.stringify({ search: document.getElementById('search').value })
+				}).then(res => res.json())
+				.then(response => {
+					const result_container = document.getElementById('result-container')
+					result_container.classList.add('border')
+					result_container.classList.remove('d-none')
+					result_container.innerHTML = 'Result: '
+					let result
+					if(response.category) {
+						result = document.createElement('a')
+						result.href = '/template/' + response.category
+					}
+					else {
+						result = document.createElement('span')
+						result.classList.add('text-muted')
+					}
+					result.innerHTML = response.title
+					result_container.appendChild(result)
+				})
+			}
+		</script>
+	{% endif %}
+{% endblock %}

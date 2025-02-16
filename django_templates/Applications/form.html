@@ -1,0 +1,317 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ form_name }}{% endblock %}
+
+{% block head %}
+<style type="text/css">
+	html, body {
+		background-color: lightgray;
+	}
+	.navbar-brand{
+		color: black !important;
+	}
+	a:hover {
+		text-decoration: none;
+		color: #9457eb;
+		cursor: pointer;
+	}
+	.navbar{
+		background-color: #fff !important;
+		top: 0px !important;
+		height: 70px !important;
+	}
+	.nav-link{
+		color: black !important;
+	}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-wrapper" style="margin-top: 5%;">
+	<div class="card p-3 m-3 w-50 mx-auto">
+		<form class="text-center" method="POST" enctype="multipart/form-data">
+			{% csrf_token %}
+			<h4 class="text-primary mb-2">
+				Application for <span id="type"></span>
+			</h4>
+			<div class="border rounded p-2 w-100">
+				<h5><b>Personal Information:</b></h5>
+				<div class="row mt-2">
+					<div class="col-md-6 col-sm-12">
+						<div class="mx-1">
+							<input type="text" class="form-control form-control-sm" placeholder="Applicant Name" name="name" required>
+						</div>
+					</div>
+					<div class="col-md-3 col-sm-12">
+						<div class="mx-1">
+							<input type="number" class="form-control form-control-sm" placeholder="Mobile Number" name="mobile" minlength="10" maxlength="10" required>
+						</div>
+					</div>
+					<div class="col-md-3 col-sm-12">
+						<div class="mx-1">
+							{% if form == 'ration' %}
+								<input type="number" class="form-control form-control-sm" placeholder="Annual Income" name="annual_income" min="1" required>
+							{% elif form == 'epass' or form == 'rally' %}
+								<input type="number" class="form-control form-control-sm" placeholder="Duration ({% if form == 'epass' %}days{% else %}hours{% endif %})" name="duration" min="0" required>
+							{% elif form == 'pharmacy' %}
+								<select class="custom-select custom-select-lg" name="reason" required>
+									<option selected>License Type</option>
+									<option value="Retail">Retail</option>
+									<option value="Wholesale">Wholesale</option>
+								</select>
+							{% elif form == 'hotel' %}
+								<select class="custom-select custom-select-lg" name="reason" required>
+									<option selected>License Type</option>
+									<option value="Hotel">Hotel</option>
+									<option value="Restaurant">Restaurant</option>
+								</select>
+							{% elif form == 'travel' %}
+								<input type="text" class="form-control form-control-sm" placeholder="Vehicle Number" name="vehicle" required>
+							{% endif %}
+						</div>
+					</div>
+				</div>
+				<div class="row mt-2">
+					{% if form == 'ration' or form == 'pharmacy' or form == 'hotel' or form == 'travel' %}
+						<div class="col-12">
+							<div class="mx-1">
+								<textarea
+									placeholder="Address {% if form == 'pharmacy' %}of Pharmacy{% elif form == 'hotel' %}of Hotel{% elif form == 'travel' %}of Travel Agency{% endif %}"
+									style="resize: none; min-height: 6rem;"class="form-control" name="address" required
+								></textarea>
+							</div>
+						</div>
+					{% elif form == 'rally' %}
+						<div class="col-12">
+							<div class="mx-1">
+								<textarea style="resize: none; min-height: 6rem;" class="form-control" placeholder="Reason for rally" name="reason" required></textarea>
+							</div>
+						</div>
+					{% elif form == 'epass' %}
+						<div class="col-md-6 col-sm-12">
+							<div class="mx-1">
+								<select class="custom-select custom-select-lg" name="reason" required>
+									<option selected>Reason for Travel</option>
+									<option value="Essential Service">Essential Service</option>
+									<option value="Public Service">Public Service</option>
+									<option value="Death of Relative">Death of First Relative</option>
+									<option value="Medical Emergency">Extreme Medical Emergency</option>
+									<option value="Marriage">Marriage</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-md-6 col-sm-12">
+							<div class="mx-1">
+								<input type="text" class="form-control form-control-sm" placeholder="Vehicle Number" name="vehicle" required>
+							</div>
+						</div>
+					{% endif %}
+				</div>
+				<div class="row mt-2">
+					<div class="col-md-6 col-sm-12">
+						<div class="mx-1">
+							<input type="email" class="form-control form-control-sm" placeholder="Email ID" name="email" required>
+						</div>
+					</div>
+					{% if form == 'ration' or form == 'pharmacy' or form == 'hotel' %}
+						<div class="col-md-3 col-sm-12">
+							<div class="mx-1">
+								<select class="custom-select custom-select-lg" name="gender" required>
+									<option selected>Gender</option>
+									<option value="Male">Male</option>
+									<option value="Female">Female</option>
+									<option value="Transgender">Transgender</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-md-3 col-sm-12">
+							<div class="mx-1">
+								<input type="number" class="form-control form-control-sm" placeholder="Age" name="age" min="1" required>
+							</div>
+						</div>
+					{% elif form == 'epass' or form == 'rally' or form == 'travel' %}
+						<div class="col-md-3 col-sm-12">
+							<div class="mx-1">
+								<input type="text" class="form-control form-control-sm" placeholder="Route Origin" name="source" required>
+							</div>
+						</div>
+						<div class="col-md-3 col-sm-12">
+							<div class="mx-1">
+								<input type="text" class="form-control form-control-sm" placeholder="Route Destination" name="destination" required>
+							</div>
+						</div>
+					{% endif %}
+				</div>
+			</div>
+			{% if form == 'ration' or form == 'epass' or form == 'rally' %}
+				<div class="border rounded mt-3 p-2">
+					<b class="mr-3">Members to be Included</b>
+					<button class="btn btn-primary mr-3" type="button" id="add">Add Member</button>
+					<div id="members" class="row">
+						<input type="hidden" name="count">
+						<div class="col-md-6 col-sm-12 px-4 mt-2">
+							<div class="input-group">
+								<input type="text" class="form-control member" placeholder="Member Name" required>
+								<div class="input-group-prepend">
+									<button class="btn btn-secondary remove" type="button" onclick="remove(this)">Remove</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			{% endif %}
+			<div class="border rounded p-3 w-100 mt-3">
+				<div class="my-2">
+					<b>Documents Required:</b>
+					<span class="font-italic" style="color: silver;">(Documents will be verified before submission)</span>
+				</div>
+				<div class="row w-100 px-1 text-left">
+					<div class="col-md-4 col-sm-12 my-1">
+						<div class="custom-file">
+							<input class="custom-file-input" type="file" name="photo" id="photo" required>
+							<label class="custom-file-label" for="photo" class="form-label font-weight-bold text-uppercase text-muted">Applicant Photo</label>
+						</div>
+					</div>
+					<div class="col-md-4 col-sm-12 my-1">
+						<div class="custom-file">
+							<input class="custom-file-input" type="file" name="aadhar" id="aadhar" required>
+							<label class="custom-file-label" for="aadhar" class="form-label font-weight-bold text-uppercase text-muted">Aadhar Card</label>
+						</div>
+					</div>
+					<div class="col-md-4 col-sm-12 my-1">
+						<div class="custom-file">
+							<input class="custom-file-input" type="file" name="driving_license" id="driving_license" required>
+							<label class="custom-file-label" for="driving_license" class="font-weight-bold text-uppercase text-muted">Driving License</label>
+						</div>
+					</div>
+				</div>
+				<div class="row w-100 px-1 text-left">
+					<div class="col-md-4 col-sm-12 my-1">
+						<div class="custom-file">
+							<input class="custom-file-input" type="file" name="pan" id="pan" required>
+							<label class="custom-file-label" for="pan" class="form-label font-weight-bold text-uppercase text-muted">Pan Card</label>
+						</div>
+					</div>
+					<div class="col-md-4 col-sm-12 my-1">
+						<div class="custom-file">
+							<input class="custom-file-input" type="file" name="voter_id" id="voter_id" required>
+							<label class="custom-file-label" for="voter_id" class="form-label font-weight-bold text-uppercase text-muted">Voter ID Card</label>
+						</div>
+					</div>
+					<!-- <div class="col-md-4 col-sm-12 my-1">
+						<div class="custom-file">
+							<input class="custom-file-input" type="file" name="driving_license" required>
+							<label class="custom-file-label" for="aadhar" class="font-weight-bold text-uppercase text-muted">Driving License</label>
+						</div>
+					</div> -->
+				</div>
+			</div>
+			<div class="mt-2">
+				<button type="submit" class="btn btn-success mr-1">Verify and Submit</button>
+				<button type="reset" class="btn btn-danger ml-1">Reset</button>
+			</div>
+		</form>
+	</div>
+	<!-- Modal -->
+	<div class="modal fade" id="verification" tabindex="-1" role="dialog" aria-labelledby="verification-title" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title mx-auto" id="verification-title">Document(s) Verification Status</h5>
+				</div>
+				<div class="modal-body">
+					<div class="table-responsive">
+						<table class="table table-bordered">
+							<thead>
+								<tr>
+									<th>Document</th>
+									<th>Verification Status</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>Photo</td>
+									<td>{% if 'photo' in errors %}&#10060;{% else %}&#9989;{% endif %}</td>
+								</tr>
+								<tr>
+									<td>Aadhar Card</td>
+									<td>{% if 'aadhar' in errors %}&#10060;{% else %}&#9989;{% endif %}</td>
+								</tr>
+								<tr>
+									<td>Driving License</td>
+									<td>{% if 'driving_license' in errors %}&#10060;{% else %}&#9989;{% endif %}</td>
+								</tr>
+								<tr>
+									<td>Pan Card</td>
+									<td>{% if 'pan' in errors %}&#10060;{% else %}&#9989;{% endif %}</td>
+								</tr>
+								<tr>
+									<td>Voter ID Card</td>
+									<td>{% if 'voter_id' in errors %}&#10060;{% else %}&#9989;{% endif %}</td>
+								</tr>
+							</tbody>
+						</table>
+					  </div>
+				</div>
+				<div class="modal-footer">
+					{% if not errors %}
+						<button type="button" class="btn btn-primary" onclick="window.location.href = '/dashboard/applications'">Check Status on Dashboard</button>
+					{% endif %}
+						<button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+	document.getElementById('type').innerHTML = {
+		'ration': 'Ration Card',
+		'epass': 'Covid E-Pass',
+		'rally': 'Rally License',
+		'hotel': 'Hotel License',
+		'pharmacy': 'Pharmacy License',
+		'travel': 'Travel Agency License',
+	}["{{ form }}"]
+	{% if errors %}
+		$('#verification').modal('show')													// Show Modal if Document(s) fail to verify
+	{% else %}
+		document.referrer == document.URL ? $('#verification').modal('show')	 : null		// Show Modal if Submission Successful
+	{% endif %}
+	document.getElementById('add').addEventListener('click',() => {
+		const column = document.createElement('div')
+		column.setAttribute('class', 'col-md-6 col-sm-12 px-4 mt-2')
+		const input_group = document.createElement('div')
+		input_group.setAttribute('class', 'input-group')
+		const input = document.createElement('input')
+		input.setAttribute('class', 'form-control member')
+		input.type = 'text'
+		input.placeholder = 'Member Name'
+		input.required = true
+		const prepend = document.createElement('div')
+		prepend.setAttribute('class', 'input-group-prepend')
+		const button = document.createElement('button')
+		button.setAttribute('class', 'btn btn-secondary remove')
+		button.setAttribute('onclick', 'remove(this)')
+		button.type = 'button'
+		button.innerHTML = 'Remove'
+		prepend.appendChild(button)												// <prepend> button </prepend>
+		input_group.appendChild(input)											// <input_group> input
+		input_group.appendChild(prepend)										// prepend </input_group>
+		column.appendChild(input_group)											// <column> input_group </column>
+		document.getElementById('members').appendChild(column)
+	})
+	function remove(button) {
+		document.getElementById('members').removeChild(button.parentNode.parentNode.parentNode)
+	}
+	document.querySelector('form').addEventListener('submit',(e) => {
+		document.querySelectorAll('.member').forEach((member, index) => {
+			member.setAttribute('name', 'member'+index)
+		})
+		document.querySelector('input[name="count"]').value = document.getElementsByClassName('member').length
+		return true;
+	})
+</script>
+{% endblock %}

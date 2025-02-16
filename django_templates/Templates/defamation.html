@@ -1,0 +1,164 @@
+{% extends 'Templates/form.html' %}
+{% block title %}Cease and Desist (Defamation){% endblock %}
+{% block inputs %}
+	<!-- update(this, <type: id-true, class-false>) -->
+	<!-- highlight(this, <toggle: on-true, off-false>, <type: id-true, class-false>) -->
+	<div class="input-group my-1">
+		<div class="input-group-prepend">
+			<span class="input-group-text">Representing</span>
+		</div>
+		<select class="custom-select custom-select-lg" id="represent-input">
+			<option selected value="1">Myself</option>
+			<option value="0">My Company</option>
+		</select>
+	</div>
+	<div class="input-group my-1">
+		<div class="input-group-prepend">
+			<span class="input-group-text">Offense Date</span>
+		</div>
+		<input class="form-control" type="date" name="offense-date" onchange="update(this, true);" onfocus="highlight(this, true, true);" onblur="highlight(this, false, true);"><br />
+	</div>
+	<div class="form-floating my-1">
+		<textarea class="form-control form-control-sm" name="offense-description" onkeyup="update(this, true);" onfocus="highlight(this, true, true);" onblur="highlight(this, false, true);" placeholder="Offense Description"></textarea>
+	</div>
+	<div class="input-group my-1">
+		<div class="input-group-prepend">
+			<span class="input-group-text">Attachments/Proofs available?</span>
+		</div>
+		<select class="custom-select custom-select-lg" id="attachments-input">
+			<option selected value="1">Yes</option>
+			<option value="0">No</option>
+		</select>
+	</div>
+	<div class="dropdown w-full">
+		<button class="btn btn-block" type="button" id="causes" data-toggle="dropdown" aria-expanded="false" style="background-color: #e9ecef;">
+			Effects/Sufferings of Defamation<i class="fas fa-angle-down ml-5"></i>
+		</button>
+			<div class="dropdown-menu w-full" aria-labelledby="causes">
+				<span class="represent d-none">
+					<div class="dropdown-item">
+						<input type="checkbox" name="loss-dmg-business" id="cb0" onchange="checkbox(this);" checked>
+						<label for="cb0">Loss and Damage to Business</label>
+					</div>
+				</span>
+				<span class="represent">
+					<div class="form-group dropdown-item">
+						<div class="custom-checkbox">
+							<input type="checkbox" name="loss-prof-rep" id="cb1" onchange="checkbox(this);" checked>
+							<label for="cb1">Loss of Professional Reputation</label>
+						</div>
+					</div>
+					<div class="form-group dropdown-item">
+						<div class="custom-checkbox">
+							<input type="checkbox" name="harm-pers-rep" id="cb2" onchange="checkbox(this);" checked>
+							<label for="cb2">Harm to Personal Reputation</label>
+						</div>
+					</div>
+					<div class="form-group dropdown-item">
+						<div class="custom-checkbox">
+							<input type="checkbox" name="emo-distress" id="cb3" onchange="checkbox(this);" checked>
+							<label for="cb3">Emotional Distress</label>
+						</div>
+					</div>
+				</span>
+			</div>
+	</div>
+	<div class="input-group my-1">
+		<div class="input-group-prepend">
+			<span class="input-group-text">Defamatory content posted?</span>
+		</div>
+		<select class="custom-select custom-select-lg" id="def-content-input">
+			<option selected value="1">Yes</option>
+			<option value="0">No</option>
+		</select>
+	</div>
+	<span class="def-content">
+		<div class="input-group my-1">
+			<input class="form-control" type="number" name="removal-period" onkeyup="update(this, true);" onfocus="highlight(this, true, true);" onblur="highlight(this, false, true);" placeholder="Period to remove content"><br />
+		</div>
+		<div class="form-floating my-1">
+			<textarea class="form-control form-control-sm" name="def-content-location" onkeyup="update(this, true);" onfocus="highlight(this, true, true);" onblur="highlight(this, false, true);" placeholder="Content Location"></textarea>
+		</div>
+	</span>
+	<div class="input-group my-1">
+		<div class="input-group-prepend">
+			<span class="input-group-text">Request apology?</span>
+		</div>
+		<select class="custom-select custom-select-lg" id="apology-input">
+			<option selected value="1">Yes</option>
+			<option value="0">No</option>
+		</select>
+	</div>
+{% endblock %}
+
+{% block preview %}
+	<b class="subject">RE: Cease and Desist (Defamation)</b><br />
+	This letter serves as a notice to you to cease and desist all kinds of defamatory activities against <span class="represent">me</span><span class="represent d-none">us</span> which you have been carrying out since <span id="offense-date">______</span> including but not limited to the following activities:<br />
+	<span id="offense-description">______</span><br />
+
+	<span id="attachments">Some examples of the above-mentioned harassing activities are attached to this letter for your reference.<br /></span>
+	<br />
+	Through your activities, you have been making several false allegations and accusations against <span class="sender-name">______</span> thereby spreading false information and trying to damage the reputation of <span class="sender-name">______</span>.<br /><br />
+
+	Your actions are unwanted, annoying and defamatory and your false accusations and actions and statements have caused us to suffer inter-alia:<br />
+
+	<!-- ### each point optional -->
+
+	<!-- - Physical harm and injury;<br /> -->
+
+	<span class="represent d-none">
+		<span id="loss-dmg-business">- Substantial loss and damage to our business;<br /></span>
+	</span>
+
+	<span class="represent">
+		<span id="loss-prof-rep">- Substantial damage to my professional reputation;<br /></span>
+		<span id="harm-pers-rep">- Substantial harm to my personal reputation and character;<br /></span>
+		<span id="emo-distress">- Emotional distress;<br /></span>
+	</span>
+	<additions, optional>
+
+	<!-- ### end -->
+	<br />
+	The statements made by you are false, baseless, highly defamatory of <span class="sender-name">______</span> and made with the intention to cause damages and to defame it.<br /><br />
+
+	<!-- ### if defamatory content posted anywhere -->
+
+	We hereby request you to immediately cease and desist the above-mentioned activities and to unconditionally apologise for your actions and refrain from such activities including without limitation refrain from making any false and baseless accusations which are false to your knowledge.<br /><br />
+
+	<span class="def-content">We hereby also demand that within a period of <span id="removal-period">______</span> days from the receipt of the letter, you remove all defamatory statements and content from the following:<br />
+	<span id="def-content-location">______</span><br />
+
+	<span id="apology">and publish a retraction and apology</span> and notify us in writing when the above has been completed.<br /><br />
+	</span>
+	<!-- ### end -->
+
+	This letter is being sent without prejudice to any rights and/or remedies that <span class="sender-name">______</span> may have under applicable laws.<br /><br />
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+	<script type="text/javascript">
+		const range = document.querySelector('.form-range')
+		range.value = 16
+		range.onchange()
+		document.getElementById('attachments-input').addEventListener('change', function() {
+			document.getElementById('attachments').style.display = (this.value == '1' ? '' : 'none')
+		})
+		document.getElementById('def-content-input').addEventListener('change', function() {
+			document.querySelectorAll('.def-content').forEach((element) => {
+				element.style.display = (this.value == '1' ? '' : 'none')
+			})
+		})
+		document.getElementById('apology-input').addEventListener('change', function() {
+			document.getElementById('apology').style.display = (this.value == '1' ? '' : 'none')
+		})
+		document.getElementById('represent-input').addEventListener('change', function() {
+			document.querySelectorAll('.represent').forEach((element) => {
+				element.classList.toggle('d-none')
+			})
+		})
+		function checkbox(locator) {
+			document.getElementById(locator.name).style.display = (locator.checked ? '' : 'none')
+		}
+	</script>
+{% endblock %}

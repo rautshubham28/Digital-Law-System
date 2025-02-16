@@ -1,0 +1,118 @@
+{% if content.applications %}
+	<div class="card">
+		<div class="table-responsive">
+			<table class="table table-bordered overflow-y-auto" style="max-height: 300px;">
+				<thead>
+					<tr>
+						<th>Application Type</th>
+						<th>Name</th>
+						<th>Mobile</th>
+						<th>Email</th>
+						<th>Address</th>
+						<th>Age</th>
+						<th>Gender</th>
+						<th>Annual Income</th>
+						<th>Route Origin</th>
+						<th>Route Destination</th>
+						<th>Reason</th>
+						<th>Vehicle</th>
+						<th>Duration</th>
+						<th>Members</th>
+						<th>Photo</th>
+						<th>Aadhar</th>
+						<th>Driving License</th>
+						<th>Pan</th>
+						<th>Voter ID</th>
+						<th>Approved?</th>
+						<th>Options</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for application in content.applications %}
+						<tr>
+							<td>
+								<script>document.write(
+									{ 'ration': 'Ration Card', 'driving': 'Driving License', 'epass': 'Covid E-Pass', 'rally': 'Rally License', 'medical': 'Medical License' }["{{ application.application_type }}"]
+								)
+								</script>
+							</td>
+							<td>{{ application.name }}</td>
+							<td>{{ application.mobile }}</td>
+							<td>{{ application.email }}</td>
+							<td>{% if application.address %}{{ application.address }}{% else %}-{% endif %}</td>
+							<td>{% if application.age %}{{ application.age }}{% else %}-{% endif %}</td>
+							<td>{% if application.gender %}{{ application.gender }}{% else %}-{% endif %}</td>
+							<td>{% if application.annual_income %}{{ application.annual_income }}{% else %}-{% endif %}</td>
+							<td>{% if application.source %}{{ application.source }}{% else %}-{% endif %}</td>
+							<td>{% if application.destination %}{{ application.destination }}{% else %}-{% endif %}</td>
+							<td>{% if application.reason %}{{ application.reason }}{% else %}-{% endif %}</td>
+							<td>{% if application.vehicle %}{{ application.vehicle }}{% else %}-{% endif %}</td>
+							<td>{% if application.duration %}{{ application.duration }} {% if application.application_type == 'epass' %}days{% else %}hours{% endif %}{% else %}-{% endif %}</td>
+							<td>{% if application.members %}
+								<ol>
+									{% for member in application.members %}
+										<li>{{ member.member }}</li>
+									{% endfor %}
+								</ol>
+								{% else %}-{% endif %}
+							</td>
+							<td><img src="data: image/png; base64, {{ application.photo }}" width="100" height="100"></td>
+							<td><img src="data: image/png; base64, {{ application.aadhar }}" width="200" height="100"></td>
+							<td><img src="data: image/png; base64, {{ application.driving_license }}" width="200" height="100"></td>
+							<td><img src="data: image/png; base64, {{ application.pan }}" width="200" height="100"></td>
+							<td><img src="data: image/png; base64, {{ application.voter_id }}" width="100" height="200"></td>
+							<td>
+								{% if application.is_approved %}
+									<span class="text-success">Yes</span>
+								{% else %}
+									<span class="text-danger">No</span>
+								{% endif %}
+							</td>
+							<td>
+								{% if application.is_approved %}
+									<a download="{{ user.first_name }}_{{ user.last_name }}_{{ application.application_type }}.jpg" href="data:image/jpeg;base64,{{ application.elicense }}" role="button" class="btn btn-success">
+										<i class="fas fa-download"></i>
+									</a>
+								{% else %}
+									<button data-toggle="modal" data-target="confirmation" class="btn btn-danger" onclick="remove({{ application.id }})">
+										<i class="fas fa-trash"></i>
+									</button>
+								{% endif %}
+							</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<!-- First comes the modal -->
+	<div class="modal" id="confirmation" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<h5 class="modal-title">Confirmation</h5>
+				<p>Are you sure that you want to delete the application?</p>
+				<div class="text-right mt-20">
+					<form method="POST">
+						{% csrf_token %}
+						<input name="delete" type="hidden">
+						<button class="btn mr-5" data-dismiss="modal" type="button">Close</button>
+						<button type="submit" class="btn btn-danger">Delete</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+{% else %}
+	<div class="d-flex justify-content-center p-20 align-items-center flex-column">
+		<h4>No Applications Found!</h4>
+		<p class="text-muted">You haven't made any applications as of now. Any application(s) thay you made will be listed here.</p>
+	</div>
+{% endif %}
+{% block script %}
+	<script>
+		const form = document.querySelector('form')
+		function remove(id) {
+			form.querySelector('input[name="delete"]').value = id
+		}
+	</script>
+{% endblock %}

@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %}Virtual Advisor{% endblock %}
+
+{% block head %}
+	<style type="text/css">
+		html, body {
+			/* height: 100%; */
+			background-color: lightgray;
+		}
+		.navbar-brand{
+			color: black !important;
+		}
+		a:hover {
+			text-decoration: none;
+			color: #9457eb;
+			cursor: pointer;
+		}
+		.navbar{
+			background-color: #fff !important;
+			top: 0px !important;
+			height: 70px !important;
+		}
+		.nav-link{
+			color: black !important;
+		}
+		h1, h2, h3, h4, h5, h6 {
+			font-family: 'Merriweather', serif;
+		}
+	</style>
+{% endblock %}
+
+{% block content %}
+	<div class="content-wrapper" style="margin-top: 5%;">	
+	{% if user.is_authenticated %}
+		<div class="row mt-2">
+			<div class="col-8 offset-2">
+				<!-- Search Box -->
+				<div class="toggle">
+					<div class="row text-center mt-2">
+						<div class="col-10">
+							<div class="input-group">
+								<input type="text" class="form-control" placeholder="search by keywords / NL query / case title / act / section" id="search">
+							</div>
+						</div>
+						<div class="col-2 text-center">
+							<button class="btn btn-primary btn-lg" onclick="search();">Search</button>
+						</div>
+					</div>
+						<!-- Results Box -->
+					<div id="result-container" class="mt-2 d-none">          
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Modal -->
+	<div class="modal fade" id="summary-modal" tabindex="-1" role="dialog" aria-labelledby="summary-modal" aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title"></h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body"></div>
+			</div>
+		</div>
+	</div>
+	{% endif %}
+	{% endblock %}
+	
+	{% block scripts %}
+		{% if user.is_authenticated %}
+	<script type="text/javascript">
+		let summaries = []
+		function summary(id) {
+			document.querySelector('.modal-title').innerHTML = document.querySelector('#title' + id).innerHTML
+			document.querySelector('.modal-body').innerHTML = summaries[id]
+		}
+		function search() {
+			fetch('/advisor/', {
+				method: 'POST',
+				headers: {
+						'Content-Type': 'application/json',
+						"X-CSRFToken": "{{ csrf_token }}"
+					},
+				body: JSON.stringify({ search: document.getElementById('search').value })
+			}).then(res => res.json())
+			.then(response => {
+				const result_container = document.getElementById('result-container')
+				summaries = []
+				result_container.classList.remove('d-none')
+				let results = ''
+				response.AllResult.forEach((result, index) => {
+					summaries.push(result['summary'])
+					let acts
+					try { acts = '<ol>' + result['acts'].reduce((acts, act) => acts + '<li>' + act + '</li>', '') + '</ol>' }
+					catch { acts = ' -' }
+					results += '<div class="card mx-0 my-3 p-5">' +
+						'<h5><u id="title' + index + '">' + result['casename'] + '</u></h5>'+
+						'<p><b>Date: </b>' + result['date'] + '</p>' +
+						'<p><b>Judge Name: </b>' + result['judges'] + '</p>' +
+						'<p><b>Acts:</b>' + acts + '</p>' +
+						'<p><b>Categories: </b>' +
+							result['categories'].reduce((categories, category) => categories + (response.matched.includes(category) ? ('<span class="bg-danger font-weight-bold text-light p-1">' + category + '</span>') : category) + ', ', '') +
+						'</p>' +
+						'<p><b>Judgement: </b>' + result['judgement'] + '</p>' +
+						'<p><button type="button" class="btn btn-success" data-toggle="modal" data-target="#summary-modal" onclick="summary(' + index + ')">Show Summary</button>' + '</p>' +
+					'</div>'
+				})
+				document.getElementById('result-container').innerHTML = results
+			})
+		}
+	</script>
+	{% endif %}
+	{% endblock %}

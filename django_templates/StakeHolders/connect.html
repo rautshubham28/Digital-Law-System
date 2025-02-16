@@ -1,0 +1,221 @@
+{% if page == 'lawyers' %}
+	<script>let lawyers_list = [];</script>
+{% endif %}
+{% if page == 'lawyers' or page == 'clients' and content.stakeholders %}
+	<div class="card p-5 overflow-x-auto text-nowrap">
+		<div class="btn-group" role="group">
+			{% for connect in content.stakeholders %}
+				<button class="btn btn-lg m-5 stakeholders" onclick="conversation(this, {{ connect.id }})">
+					<span>{{ connect.first_name }} {{ connect.last_name }}</span>
+					{% if page == 'lawyers' %}
+						<script>lawyers_list.push({{ connect.lawyer_id }});</script>
+						<span class="text-muted">[{{ connect.domain }}]</span>
+					{% endif %}
+				</button>
+			{% endfor %}
+			{% if page == 'lawyers' %}
+				<button data-toggle="modal" data-target="add" class="btn btn-lg btn-secondary m-5">Add lawyer <i class="fas fa-plus"></i></button>
+			{% endif %}
+		</div>
+	</div>
+	<div class="card my-15 overflow-y-auto font-size-16" style="height: 60vh;" id="conversation"></div>
+	<div class="card p-5 my-15">
+		<input class="form-control" id="message" type="text" placeholder="Select/Select a Lawyer to start Conversation" disabled>
+	</div>
+{% else %}
+	<div class="d-flex justify-content-center p-20 align-items-center flex-column">
+		<h4>No Clients Found!</h4>
+		<p class="text-muted">Clients will be displayed once they try to contact you.</p>
+	</div>
+{% endif %}
+{% if page == 'lawyers' %}
+	<!-- LAWYERS SEARCH MODAL -->
+	<div class="modal ie-scroll-fix" id="add" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content" style="width: 85rem;">
+				<h5 class="modal-title">Search Lawyers</h5>
+				<form class="form-inline mw-full">
+					<div class="form-group">
+						<select class="form-control" id="domain" required>
+							<option value="" selected="selected" disabled="disabled">Domain</option>
+							<option value="Corporate">Corporate</option>
+							<option value="Divorce">Divorce</option>
+							<option value="Property">Property</option>
+							<option value="Criminal">Criminal</option>
+							<option value="Tax">Tax</option>
+							<option value="Personal">Personal</option>
+							<option value="Medical">Medical</option>
+							<option value="Government">Government</option>
+							<option value="Army">Army</option>
+						</select>
+						<select class="form-control" id="experience" required>
+							<option value="" selected="selected" disabled="disabled">Experience</option>
+							<option value="0">0+</option>
+							<option value="5">5+</option>
+							<option value="10">10+</option>
+							<option value="15">15+</option>
+							<option value="20">20+</option>
+						</select>
+						<select class="form-control" id="state" required>
+							<option value="" selected="selected" disabled="disabled">State</option>
+							<option value="Maharashtra">Maharashtra</option>
+							<option value="Gujrat">Gujrat</option>
+							<option value="Bengal">Bengal</option>
+							<option value="Punjab">Punjab</option>
+							<option value="Haryana">Haryana</option>
+							<option value="Goa">Goa</option>
+							<option value="Uttar Pradesh">Uttar Pradesh</option>
+							<option value="Madhya Pradesh">Madhya Pradesh</option>
+							<option value="Delhi">Delhi</option>
+							<option value="Jammu">Jammu</option>
+							<option value="Kerela">Kerela</option>
+							<option value="Karnataka">Karnataka</option>
+							<option value="Telangana">Telangana</option>
+							<option value="Sikkim">Sikkim</option>
+							<option value="Assam">Assam</option>
+							<option value="Andra Pradesh">Andra Pradesh</option>
+							<option value="Chattisgad">Chattisgad</option>
+							<option value="Rajasthan">Rajasthan</option>
+							<option value="Bihar">Bihar</option>
+						</select>
+						<button type="submit" class="btn btn-primary">Search</button>
+					</div>
+				</form>
+				<div class="table-responsive" id="results"></div>
+			</div>
+		</div>
+	</div>
+	<!-- LAWYERS SEARCH MODAL END -->
+	<!-- Confirmation Modal -->
+	<div class="modal" id="confirmation" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<h5 class="modal-title">Lawyer Added Successfully</h5>
+				<p>You may now message him/her regarding your legal issue.</p>
+				<div class="text-right mt-20">
+					<button class="btn mr-5" data-dismiss="modal" type="button">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endif %}
+{% block scripts %}
+<script>
+	let current_conversation_id = null
+	const page = "{{ page }}"
+	{% if page == 'lawyers' %}
+		document.referrer == document.URL ? halfmoon.toggleModal('confirmation') : null
+		document.querySelector('form').addEventListener('submit', e => {
+			e.preventDefault()
+			const domain = document.getElementById('domain').value
+			const experience = document.getElementById('experience').value
+			const state = document.getElementById('state').value
+			fetch('/dashboard/lawyers', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					"X-CSRFToken": "{{ csrf_token }}"
+				},
+				body: JSON.stringify({
+					mode: 1,
+					domain: domain,
+					experience: parseInt(experience),
+					state: state,
+				})
+			}).then(res => res.json())
+			.then(response => {
+				let results = '<table class="table table-bordered"><thead><tr>'+
+					'<th>Name</th>'+
+					'<th>Domain</th>'+
+					'<th>Email ID</th>'+
+					'<th>Mobile</th>'+
+					'<th>Experience</th>'+
+					'<th>State</th>'+
+					'<th>Contact?</th>'+
+					'</tr></thead><tbody>'
+				response.lawyers.forEach(element => {
+					results += '<tr>'+
+						'<td>' + element.first_name + ' ' + element.last_name + '</td>'+
+						'<td>' + element.domain + '</td>'+
+						'<td>' + element.email + '</td>'+
+						'<td>' + element.mobile + '</td>'+
+						'<td>' + element.years_of_experience + ' Years</td>'+
+						'<td>' + element.state + '</td>'+
+						'<td>'+
+							'<form method="POST">'+
+								'{% csrf_token %}'+
+								'<input type="hidden" name="lawyer_id" value="' + element.id +'">'+
+								(lawyers_list.includes(element.id) ? '<span class="text-success">Added</span>' : 
+								'<button type="submit" class="btn btn-secondary">Add <i class="fas fa-plus"></i></button>')+
+							'</form>'+
+						'</td>'
+				})
+				results += '</tbody></table>'
+				document.getElementById('results').innerHTML = results
+			})
+		})
+	{% endif %}
+	{% if page == 'lawyers' or page == 'clients' and content.stakeholders %}
+		document.getElementById('message').addEventListener('keydown', function(e) {
+			const message = this.value
+			if(e.which == 13) {
+				fetch('/dashboard/lawyers', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						"X-CSRFToken": "{{ csrf_token }}"
+					},
+					body: JSON.stringify({
+						mode: 0,
+						sender: {% if page == 'lawyers' %}true{% else %}false{% endif %},
+						message: message,
+						conversation_id: current_conversation_id,
+					})
+				}).then(res => res.text())
+				.then(response => {
+					if(response) {
+						document.getElementById('conversation').innerHTML += '<div><b class="text-danger">You</b>: ' + message + '</div>'
+					}
+				})
+				this.value = ''
+			}
+		})
+	{% endif %}
+	function conversation(current, conversation_id) {
+		fetch('/dashboard/lawyers', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				"X-CSRFToken": "{{ csrf_token }}" 
+			},
+			body: JSON.stringify({
+				mode: 2,
+				conversation_id: conversation_id,
+			})
+		}).then(res => res.json())
+		.then(response => {
+			document.querySelectorAll('.stakeholders').forEach(button => {
+				button.classList.remove('btn-primary')
+			})
+			current.classList.add('btn-primary')
+			current_conversation_id = conversation_id
+			document.getElementById('message').removeAttribute('disabled')
+			document.getElementById('message').placeholder = "Type a Message and Press Enter to Send"
+			let conversation = ''
+			response.conversation.forEach(chat => {
+				let sender, color
+				if(chat.sender == (page == 'lawyers')) {
+					sender = "You"
+					color = 'danger'
+				}
+				else {
+					sender = current.querySelector('span').innerHTML
+					color = 'primary'
+				}
+				conversation += '<div><b class="text-' + color +'">' + sender + '</b>: ' + chat.message + '</div>'
+			})
+			document.getElementById('conversation').innerHTML = conversation
+		})
+	}
+</script>
+{% endblock %}

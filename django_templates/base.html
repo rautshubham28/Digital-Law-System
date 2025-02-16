@@ -1,0 +1,185 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link rel="shortcut icon" type="image/png" href="{% static 'img/favicon.png' %}"/>
+		<title>{% block title %}{% endblock %}</title>
+		<link rel="preconnect" href="https://fonts.gstatic.com">
+		<link href="https://fonts.googleapis.com/css2?family=Nunito&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css2?family=Merriweather&display=swap" rel="stylesheet">
+		<script src="https://kit.fontawesome.com/823e8efa26.js" crossorigin="anonymous"></script>
+		<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+		<link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Playfair+Display:400,400i,700,700i,900,900i&display=swap" rel="stylesheet">
+
+		<link rel="stylesheet" href="{% static 'css/open-iconic-bootstrap.min.css' %}">
+		<link rel="stylesheet" href="{% static 'css/animate.css' %}">
+		
+		<link rel="stylesheet" href="{% static 'css/owl.carousel.min.css' %}">
+		<link rel="stylesheet" href="{% static 'css/owl.theme.default.min.css' %}">
+		<link rel="stylesheet" href="{% static 'css/magnific-popup.css' %}">
+
+		<link rel="stylesheet" href="{% static 'css/aos.css' %}">
+
+		<link rel="stylesheet" href="{% static 'css/ionicons.min.css' %}">
+		
+		<link rel="stylesheet" href="{% static 'css/flaticon.css' %}">
+		<link rel="stylesheet" href="{% static 'css/icomoon.css' %}">
+		<link rel="stylesheet" href="{% static 'css/style.css' %}">
+		{% block head %}{% endblock %}
+		<style>
+			ul ul{position: absolute;
+				background: #888;
+				top: 100%;
+				list-style: none;
+				margin: 0;
+				padding: 0;
+				opacity: 0;
+ 				transition: opacity 0s 1s;
+				
+			}
+			ul li:hover > ul{
+				opacity: 1;
+  				transition: opacity 0s;
+			}
+			ul ul li{
+				padding-left: 20px;
+				padding-right: 20px;	
+			}
+			
+		</style>
+	</head>
+	<body>
+			<nav class="navbar px-md-0 navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+				<div class="container-fluid px-md-5">
+					<a class="navbar-brand" href="">MyLawyer <span>Digitalized Law System</span></a>
+					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="oi oi-menu"></span> Menu
+					  </button>
+			
+					  <div class="collapse navbar-collapse" id="ftco-nav">
+						<ul class="navbar-nav ml-auto">
+						  	<li class="nav-item"><a href="../" class="nav-link">Home</a></li>
+						  	<li class="nav-item">
+								<a href="/services" class="nav-link">Our Services</a>
+								<ul>
+									<li class="nav-item"><a href="/application" class="nav-link">E-License</a></li>
+									<li class="nav-item"><a href="/template" class="nav-link">Templates</a></li>
+									<li class="nav-item"><a href="/petition" class="nav-link">Petitions</a></li>
+									<li class="nav-item"><a href="/advisor" class="nav-link">Advisor</a></li>
+								</ul>
+							</li>
+						  	<li class="nav-item"><a href="/contact" class="nav-link">Contact</a></li>
+						</ul>
+						<div class="navbar-content">
+							{% if user.is_authenticated %}
+								<div class="dropleft">
+									<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown">
+										<i class="fas fa-user"></i> {{ user.first_name }} {{ user.last_name }}
+									</button>
+									<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+										<a href="/dashboard" class="dropdown-item"><i class="fas fa-tachometer-alt"></i>&ensp;Dashboard</a>
+										<div class="dropdown-divider"></div>
+										<a href="/signout" class="dropdown-item"><i class="fas fa-sign-out-alt"></i>&ensp;Signout</a>
+									</div>
+								</div>
+							{% else %}
+								<button class="btn btn-secondary" type="button" data-toggle="modal" data-target="#authenticate">Login / Signup</button>
+							{% endif %}
+						</div>
+					  </div>
+				</div>
+			</nav>
+			<!-- Content wrapper -->
+			{% block content %}{% endblock %}
+			<!-- Modal -->
+			<div class="modal fade" id="authenticate" tabindex="-1" role="dialog" aria-labelledby="authenticate" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Sign In</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body text-center">
+							<form method="POST" action="/">
+								{% csrf_token %}
+								<div class="form-group">
+									<label for="username" class="required text">Username</label>
+									<input type="text" name="username" class="form-control" placeholder="Username" required="required">
+								</div>
+								<div class="form-group">
+									<label for="password" class="required">Password</label>
+									<input type="password" name="password" class="form-control" placeholder="Password" required="required">
+								</div>
+								<div id="signup" class="d-none">
+									<div class="form-group">
+										<label for="name" class="required">First Name</label>
+										<input type="text" name="first_name" class="form-control" placeholder="First Name" disabled required>
+									</div>
+									<div class="form-group">
+										<label for="name" class="required">Last Name</label>
+										<input type="text" name="last_name" class="form-control" placeholder="Last Name" disabled required>
+									</div>
+									<div class="form-group">
+										<label for="name" class="required">Email</label>
+										<input type="email" name="email" class="form-control" placeholder="Name" disabled required>
+									</div>
+								</div>
+								<button class="btn btn-primary btn-block" type="submit">Sign in</button>
+							</form>
+							<p class="text-danger my-10">{{ e }}</p>
+						</div>
+						<div class="modal-footer">
+							<button onclick="toggle_authenticate(this)" class="btn btn-success mr-20">Need Account? Sign Up</button>
+							<button data-dismiss="modal" class="btn btn-secondary">Continue as Guest</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		<script>
+			{% if e %}
+				$('#authenticate').modal('show')
+			{% endif %}
+			function toggle_authenticate(button) {
+				if(button.innerHTML.includes('Up')) {
+					button.innerHTML = 'Have Account? Sign In'
+					document.getElementById('signup').classList.remove('d-none')
+					document.querySelector('.modal-title').innerHTML = 'Sign Up'
+					document.querySelector('form').querySelector('button').innerHTML = 'Sign Up'
+					document.getElementById('signup').querySelectorAll('input').forEach(input => {
+						input.disabled = false
+					})
+				}
+				else {
+					button.innerHTML = 'Need Account? Sign Up'
+					document.getElementById('signup').classList.add('d-none')
+					document.querySelector('.modal-title').innerHTML = 'Sign In'
+					document.querySelector('form').querySelector('button').innerHTML = 'Sign In'
+					document.getElementById('signup').querySelectorAll('input').forEach(input => {
+						input.disabled = true
+					})
+				}
+			}
+		</script>
+		<script src="{% static 'js/jquery.min.js' %}"></script>
+		<script src="{% static 'js/jquery-migrate-3.0.1.min.js' %}"></script>
+		<script src="{% static 'js/popper.min.js' %}"></script>
+		<script src="{% static 'js/bootstrap.min.js' %}"></script>
+		<script src="{% static 'js/jquery.easing.1.3.js' %}"></script>
+		<script src="{% static 'js/jquery.waypoints.min.js' %}"></script>
+		<script src="{% static 'js/jquery.stellar.min.js' %}"></script>
+		<script src="{% static 'js/owl.carousel.min.js' %}"></script>
+		<script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script>
+		<script src="{% static 'js/aos.js' %}"></script>
+		<script src="{% static 'js/jquery.animateNumber.min.js' %}"></script>
+		<script src="{% static 'js/scrollax.min.js' %}"></script>
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
+		<script src="{% static 'js/google-map.js' %}"></script>
+		<script src="{% static 'js/main.js' %}"></script>
+		{% block scripts %}{% endblock %}
+	</body>
+</html>

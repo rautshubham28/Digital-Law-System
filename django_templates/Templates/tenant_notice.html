@@ -1,0 +1,73 @@
+{% extends 'Templates/form.html' %}
+{% block title %}Tenancy Ending Notice{% endblock %}
+
+{% block inputs %}
+	<div class="input-group my-1">
+		<input class="form-control" type="text" name="rented-addr" onkeyup="update(this);" onfocus="highlight(this, true);" onblur="highlight(this, false);" placeholder="Rented Address"><br />
+	</div>
+	<div class="input-group my-1">
+		<div class="input-group-prepend">
+			<span class="input-group-text">Vacation Date</span>
+		</div>
+		<input class="form-control" type="date" name="vacation-date" onchange="update(this);" onfocus="highlight(this, true);" onblur="highlight(this, false);">
+	</div>
+	<div class="input-group my-1">
+		<input class="form-control" type="text" name="notice-period" onkeyup="update(this);" onfocus="highlight(this, true);" onblur="highlight(this, false);" placeholder="Notice Period (Days/Months)"><br />
+	</div>
+	<div class="input-group my-1">
+		<div class="input-group-prepend">
+			<span class="input-group-text">Deposit Paid?</span>
+		</div>
+		<select class="custom-select custom-select-lg" id="deposit-input">
+			<option selected value="1">Yes</option>
+			<option value="0">No</option>
+		</select>
+	</div>
+	<div class="input-group my-1">
+		<input class="form-control" type="number" name="deposit-amount" onkeyup="update(this);" onfocus="highlight(this, true);" onblur="highlight(this, false);" placeholder="Deposit Amount"><br />
+	</div>
+	<div class="input-group my-1">
+		<input class="form-control" type="text" name="payment-mode" onkeyup="update(this);" onfocus="highlight(this, true);" onblur="highlight(this, false);" placeholder="Payment Mode"><br />
+	</div>
+	<div class="input-group my-1">
+		<input class="form-control" type="number" min="0" name="days" onkeyup="update(this);" onfocus="highlight(this, true);" onblur="highlight(this, false);" placeholder="Deposit Return Days"><br />
+	</div>
+{% endblock %}
+
+{% block preview %}
+	<b class="subject">RE: Notice to End Tenancy - <span id="rented-addr">______</span></b><br />
+	<div>Dear <span class="recipient-name">______</span>,</div><br />
+	This letter is to provide notice to end the tenancy at the above property. The property will be vacated on <span id="vacation-date">______</span>. <span class="hidden">This notice is in accordance with the lease, which requires notice of: <span id="notice-period">______</span>.</span><br /><br />
+	All of the tenant obligations in relation to this property have been fulfilled. In particular, no damage has been caused to the property and there is no outstanding rent. The property will be left in the condition required by the lease, and all keys will be returned.
+	<br /><br />
+	<!-- if deposit was paid -->
+	<div id="deposit">
+		Consequently, it is requested that the deposit of Rs. <span id="deposit-amount">______</span> be returned.<br />
+		Please send payment via the following payment method:
+		<span id="payment-mode">______</span><br /><br />
+		Please return the deposit, in the manner described above, within <span id="days">______</span> working days of the property being vacated. If you intend to withhold any portion of the deposit, please provide advice in writing about this within that timeframe.<br /><br />
+	</div>
+	<!-- deposit end  -->
+	Please provide any further instructions.<br /><br />
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+	<script type="text/javascript">
+		document.getElementById('deposit-input').addEventListener('change', function() {
+			if(this.value == '1') {
+				document.querySelector('input[name="deposit-amount"]').style.display = ''
+				document.querySelector('input[name="payment-mode"]').style.display = ''
+				document.querySelector('input[name="days"]').style.display = ''
+				document.getElementById('deposit').style.display = ''
+			}
+			else {
+				document.querySelector('input[name="deposit-amount"]').style.display = 'none'
+				document.querySelector('input[name="payment-mode"]').style.display = 'none'
+				document.querySelector('input[name="days"]').style.display = 'none'
+				document.getElementById('deposit').style.display = 'none'
+			}
+		})
+	</script>
+{% endblock %}
+</div>

@@ -1,0 +1,121 @@
+{% extends 'Templates/form.html' %}
+{% block title %}Breach of Contract{% endblock %}
+
+{% block head %}
+{{ block.super }}
+<style type="text/css">
+	span {
+		white-space: nowrap !important;
+	}
+</style>
+{% endblock %}
+
+{% block inputs %}
+	<div class="input-group my-1">
+		<div class="input-group-prepend">
+			<span class="input-group-text">Representing</span>
+		</div>
+		<select class="custom-select custom-select-lg" id="represent-input">
+			<option selected value="1">Myself</option>
+			<option value="0">My Company</option>
+		</select>
+	</div>
+	<div class="input-group my-1">
+		<input class="form-control" type="text" name="contract-title" onkeyup="update(this, true);" onfocus="highlight(this, true, true);" onblur="highlight(this, false, true);" placeholder="Name/Title of Contract"><br />
+	</div>
+	<div class="input-group my-1">
+		<div class="input-group-prepend">
+			<span class="input-group-text">Date of Signing</span>
+		</div>
+		<input class="form-control" type="date" name="signing-date" onchange="update(this, true);" onfocus="highlight(this, true, true);" onblur="highlight(this, false, true);"><br />
+	</div>
+	<div class="form-floating my-1">
+		<textarea class="form-control form-control-sm" name="contract-description" onkeyup="update(this, true);" onfocus="highlight(this, true, true);" onblur="highlight(this, false, true);" placeholder="Contract Description"></textarea>
+	</div>
+	<div class="form-floating my-1">
+		<textarea class="form-control form-control-sm" name="breach-description" onkeyup="update(this, true);" onfocus="highlight(this, true, true);" onblur="highlight(this, false, true);" placeholder="Breach Description"></textarea>
+	</div>
+	<div class="input-group my-1">
+		<input class="form-control" type="text" name="breach-section" onkeyup="update(this, true);" onfocus="highlight(this, true, true);" onblur="highlight(this, false, true);" placeholder="Breached Section/Clause"><br />
+	</div>
+	<div class="input-group my-1">
+		<div class="input-group-prepend">
+			<span class="input-group-text">Attachments/Proofs available?</span>
+		</div>
+		<select class="custom-select custom-select-lg" id="attachments-input">
+			<option selected value="1">Yes</option>
+			<option value="0">No</option>
+		</select>
+	</div>
+	<div class="input-group my-1">
+		<div class="input-group-prepend">
+			<span class="input-group-text">Rectification Time</span>
+		</div>
+		<select class="custom-select custom-select-lg" id="rectification-input">
+			<option selected value="1">Immediate</option>
+			<option value="0">Grace Period</option>
+		</select>
+	</div>
+	<div class="input-group my-1 rectification d-none">
+		<input class="form-control" type="text" name="rectification-period" onkeyup="update(this, true);" onfocus="highlight(this, true, true);" onblur="highlight(this, false, true);" placeholder="Grace Period (Days/Months)"><br />
+	</div>
+	<div class="form-floating my-1">
+		<textarea class="form-control form-control-sm" name="steps-description" onkeyup="update(this, true);" onfocus="highlight(this, true, true);" onblur="highlight(this, false, true);" placeholder="Steps/Actions Description"></textarea>
+	</div>
+{% endblock %}
+
+{% block preview %}
+	<!-- <"Attention _<name of person receiving letter on behalf of recipient>_" if to a company> -->
+
+	<b class="subject">RE: Breach of contract</b>
+	<div>Dear <span class="recipient-name">______</span>,</div><br />
+
+	<span class="represent">I</span><span class="represent d-none">We</span> refer to the <span id="contract-title">______</span> dated <span id="signing-date">______</span> entered into between <span class="sender-name">______</span> and <span class="recipient-name">______</span> (hereinafter the "Agreement").<br />
+
+	In terms of the Agreement you are required to do the following:<br />
+	<span id="contract-description">______</span><br />
+
+	It has come to our attention that you have breached the Agreement in the following manner:<br />
+	<span id="breach-description">______</span><br />
+
+	Specifically, you are in breach of the following section or clause of the Agreement: <span id="breach-section">______</span>.<br />
+
+	<span id="attachments">Please refer to the attached documents for examples of the breach.<br /><br /></span>
+
+	<!-- ### if possible to cure the breach ### -->
+
+	<span class="represent">I</span><span class="represent d-none">We</span> demand that you 
+	<ol type="a">
+		<li>Rectify the breach <span class="rectification">immediately</span><span class="rectification d-none">within a period of <span id="rectification-period">______</span>, from the date of receipt of this notice</span>; and without limiting the above:</li>
+
+	<!-- ### if additional steps needed to be taken by breaching party ### -->
+		<li>You will take the following specific actions:<br />
+			<span id="steps-description">_____</span>
+		</li>
+
+	<!-- ### additional steps end ### -->
+
+		<li>Within a period of 7 days from receipt of this letter, acknowledge receipt of this letter and confirm that you will not commit the breach again in the future.</li>
+	</ol>
+	If you fail to rectify the breach, <span class="represent">I</span><span class="represent d-none">We</span> will be forced to take appropriate legal action against you and will seek all available damages and remedies under the Agreement and under applicable laws.<br /><br />
+	<!-- ### cure part end ### -->
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+	<script type="text/javascript">
+		document.getElementById('attachments-input').addEventListener('change', function() {
+			document.getElementById('attachments').style.display = (this.value == '1' ? '' : 'none')
+		})
+		document.getElementById('rectification-input').addEventListener('change', function() {
+			document.querySelectorAll('.rectification').forEach((element) => {
+				element.classList.toggle('d-none')
+			})
+		})
+		document.getElementById('represent-input').addEventListener('change', function() {
+			document.querySelectorAll('.represent').forEach((element) => {
+				element.classList.toggle('d-none')
+			})
+		})
+	</script>
+{% endblock %}

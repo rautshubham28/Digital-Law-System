@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Petitions{% endblock %}
+
+{% block head %}
+	<style type="text/css">
+		html, body {
+			background-color: lightgray;
+		}
+		.navbar-brand{
+			color: black !important;
+		}
+		a:hover {
+			text-decoration: none;
+			color: #9457eb;
+			cursor: pointer;
+		}
+		.navbar{
+			background-color: #fff !important;
+			top: 0px !important;
+			height: 70px !important;
+		}
+		.nav-link{
+			color: black !important;
+		}
+	</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-wrapper" style="margin-top: 5%;">
+	<div class="card p-3 my-3 w-50 mx-auto text-center">
+		<h4 class="my-3">Petition to <span id="type"></span> Court</h4>
+		<form method="POST" enctype="multipart/form-data">
+			{% csrf_token %}
+			<div class="input-group mt-15">
+				<div class="input-group-prepend">
+					<span class="input-group-text">Title of Petition</span>
+				</div>
+				<input type="text" class="form-control" name="title" placeholder="Enter Title of Petition">
+			</div>
+			{% if court == 'high' or court == 'district' %}
+				<div class="input-group mt-2">
+					<div class="input-group-prepend">
+						<span class="input-group-text">State</span>
+					</div>
+					<select class="custom-select custom-select-lg" name="state" id="states">
+						<option>Select State</option>
+					</select>
+					{% if court == 'district' %}
+						<div class="input-group-prepend ml-10">
+							<span class="input-group-text">District</span>
+						</div>
+						<select class="custom-select custom-select-lg" name="district" id="districts">
+						</select>
+					{% endif %}
+				</div>
+			{% endif %}
+			<div class="border rounded mt-2 p-2">
+				<b class="mr-3">Petitioners:</b>
+				<button class="btn btn-primary mr-3" type="button" onclick="add(true)">Add Petitioner</button>
+				<div id="petitioners" class="row">
+					<input type="hidden" name="petitioner_count">
+					<div class="col-md-6 col-sm-12 px-4 mt-2">
+						<div class="input-group">
+							<input type="text" class="form-control form-control-sm petitioner" placeholder="Petitioner Name" required>
+							<div class="input-group-prepend">
+								<button class="btn btn-secondary" type="button" onclick="remove(this, 'petitioners')">Remove</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="border rounded mt-2 p-2">
+				<b class="mr-3">Complainees:</b>
+				<button class="btn btn-primary mr-3" type="button" onclick="add(false)">Add Complainee</button>
+				<div id="complainees" class="row">
+					<input type="hidden" name="complainee_count">
+					<div class="col-md-6 col-sm-12 px-4 mt-2">
+						<div class="input-group">
+							<input type="text" class="form-control form-control-sm complainee" placeholder="Complainee Name" required>
+							<div class="input-group-prepend">
+								<button class="btn btn-secondary remove" type="button" onclick="remove(this, 'complainees')">Remove</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<textarea class="form-control form-control-sm mt-2" placeholder="Plea Description (Point-wise in chronological order)" name="description"></textarea>
+			<div class="border rounded p-3 w-100 mt-2">
+				<div class="my-2">
+					<b>Documents Required:</b>
+					<span class="font-italic" style="color: silver;">(Documents will be verified before submission)</span>
+				</div>
+				<div class="row w-100 px-4 text-left">
+					<div class="col-md-4 col-sm-12 my-1">
+						<div class="custom-file">
+							<input class="custom-file-input" type="file" name="photo" id="photo" required>
+							<label class="custom-file-label" for="photo" class="form-label font-weight-bold text-uppercase text-muted">Applicant Photo</label>
+						</div>
+					</div>
+					<div class="col-md-4 col-sm-12 my-1">
+						<div class="custom-file">
+							<input class="custom-file-input" type="file" name="aadhar" id="aadhar" required>
+							<label class="custom-file-label" for="aadhar" class="form-label font-weight-bold text-uppercase text-muted">Aadhar Card</label>
+						</div>
+					</div>
+					<div class="col-md-4 col-sm-12 my-1">
+						<div class="custom-file">
+							<input class="custom-file-input" type="file" name="pan" id="pan" required>
+							<label class="custom-file-label" for="pan" class="form-label font-weight-bold text-uppercase text-muted">Pan Card</label>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="mt-2">
+				<button type="submit" class="btn btn-success mr-1">Verify and Submit</button>
+				<button type="reset" class="btn btn-danger ml-1">Reset</button>
+			</div>
+		</form>
+	</div>
+	<div class="modal fade" id="verification" tabindex="-1" role="dialog" aria-labelledby="verification" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title mx-auto">Document(s) Verification Status</h5>
+				</div>
+				<div class="modal-body">
+					<div class="table-responsive">
+						<table class="table table-bordered">
+							<thead>
+								<tr>
+									<th>Document</th>
+									<th>Verification Status</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>Photo</td>
+									<td>{% if 'photo' in errors %}&#10060;{% else %}&#9989;{% endif %}</td>
+								</tr>
+								<tr>
+									<td>Aadhar Card</td>
+									<td>{% if 'aadhar' in errors %}&#10060;{% else %}&#9989;{% endif %}</td>
+								</tr>
+								<tr>
+									<td>Pan Card</td>
+									<td>{% if 'pan' in errors %}&#10060;{% else %}&#9989;{% endif %}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					{% if not errors %}
+					<div class="border rounded p-3 text-center mt-2">
+						<h5>Hearing Date: {{ hearing }}</h5>
+					</div>
+					{% endif %}
+				</div>
+				<div class="modal-footer">
+					{% if not errors %}
+						<button type="button" class="btn btn-primary" onclick="window.location.href = '/dashboard/petitions'">Check Status on Dashboard</button>
+					{% endif %}
+					<button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+	let states = {}
+	{% if errors %}
+		$('#verification').modal('show')												// Show Modal if Document(s) fail to verify
+	{% else %}
+		document.referrer == document.URL ? $('#verification').modal('show') : null		// Show Modal if Submission Successful
+	{% endif %}
+	fetch('{% static "js/Petitions/states_districts.json" %}').then(res => res.json())
+	.then(response => response.forEach(element => {
+		states[element.state] = element.districts
+		document.getElementById('states').innerHTML += '<option value="' + element.state + '">' + element.state + '</option>'
+	}))
+	document.getElementById('type').innerHTML = { 'district': 'District', 'high': 'High', 'supreme': 'Supreme' }["{{ court }}"]
+	document.getElementById('states').addEventListener('change', e => {
+		let districts = ''
+		states[e.target.value].forEach(district => {
+			districts += '<option value="' + district + '">' + district + '</option>'
+		})
+		document.getElementById('districts').innerHTML = districts
+	})
+	function add(mode) {
+		const column = document.createElement('div')
+		column.setAttribute('class', 'col-md-6 col-sm-12 px-4 mt-2')
+		const input_group = document.createElement('div')
+		input_group.setAttribute('class', 'input-group')
+		const input = document.createElement('input')
+		input.setAttribute('class', 'form-control form-control-sm ' + (mode ? 'petitioner' : 'complainee'))
+		input.type = 'text'
+		input.placeholder = (mode ? 'Petitioner' : 'Complainee') + ' Name'
+		input.required = true
+		const prepend = document.createElement('div')
+		prepend.setAttribute('class', 'input-group-prepend')
+		const button = document.createElement('button')
+		button.setAttribute('class', 'btn btn-secondary')
+		button.setAttribute('onclick', 'remove(this, "' + (mode ? 'petitioners' : 'complainees') + '")')
+		button.type = 'button'
+		button.innerHTML = 'Remove'
+		prepend.appendChild(button)												// <prepend> button </prepend>
+		input_group.appendChild(input)											// <input_group> input
+		input_group.appendChild(prepend)										// prepend </input_group>
+		column.appendChild(input_group)											// <column> input_group </column>
+		document.getElementById(mode ? 'petitioners' : 'complainees').appendChild(column)
+	}
+	function remove(button, mode) {
+		document.getElementById(mode).removeChild(button.parentNode.parentNode.parentNode)
+	}
+	document.querySelector('form').addEventListener('submit',(e) => {
+		document.querySelectorAll('.petitioner').forEach((petitioner, index) => {
+			petitioner.setAttribute('name', 'petitioner'+index)
+		})
+		document.querySelector('input[name="petitioner_count"]').value = document.getElementsByClassName('petitioner').length
+		document.querySelectorAll('.complainee').forEach((complainee, index) => {
+			complainee.setAttribute('name', 'complainee'+index)
+		})
+		document.querySelector('input[name="complainee_count"]').value = document.getElementsByClassName('complainee').length
+		return true;
+	})
+</script>
+{% endblock %}

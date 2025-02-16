@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Petitions{% endblock %}
+
+{% block head %}
+	<style type="text/css">
+		html, body {
+			/* height: 100%; */
+			background-color: lightgray;
+		}
+		.navbar-brand{
+			color: black !important;
+		}
+		a:hover {
+			text-decoration: none;
+			color: #9457eb;
+			cursor: pointer;
+		}
+		.navbar{
+			background-color: #fff !important;
+			top: 0px !important;
+			height: 70px !important;
+		}
+		.nav-link{
+			color: black !important;
+		}
+	</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-wrapper" style="margin-top: 5%;">
+	<div class="row">
+		<div class="col-8 offset-2">
+			<div class="row">
+				<div class="col-12 col-md-3">
+					<div class="card p-5 mx-0 text-center" style="clip-path: polygon(0% 0%, 80% 0%, 100% 50%, 80% 100%, 0% 100%);">
+						<h4 class="text-danger">Step 1</h4>
+						<p class="mb-2 font-italic">Select the relevant Court for your Petition</p>
+					</div>
+				</div>
+				<div class="col-12 col-md-3">
+					<div class="card p-5 mx-0 text-center" style="clip-path: polygon(0% 0%, 80% 0%, 100% 50%, 80% 100%, 0% 100%, 20% 50%); padding-left: 4rem;">
+						<h4 class="text-secondary">Step 2</h4>
+						<p class="mb-2 font-italic">Fill out the details for filing your Petition</p>
+					</div>
+				</div>
+				<div class="col-12 col-md-3">
+					<div class="card p-5 mx-0 text-center" style="clip-path: polygon(0% 0%, 80% 0%, 100% 50%, 80% 100%, 0% 100%, 20% 50%); padding-left: 5rem;">
+						<h4 class="text-primary">Step 3</h4>
+						<p class="mb-2 font-italic">Submit Petition to get next Hearing Date</p>
+					</div>
+				</div>
+				<div class="col-12 col-md-3">
+					<div class="card p-5 mx-0 text-center" style="clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 20% 50%); padding-left: 4rem;">
+						<h4 class="text-success">Step 4</h4>
+						<p class="mb-2 font-italic">Visit Dashboard for further updates</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	{% if user.is_authenticated %}
+		<div class="row mt-5">
+			<div class="col-8 offset-2">
+				<div class="row">
+					<div class="col-sm-12 col-md-4">
+						<a href="district" class="card p-5 text-center shadow-lg d-block">
+							<h5><i class="fas fa-landmark"></i> District Court</h5>
+							<p>File An Online petition to any of the District Court of India to which the concerned matter refers to for jurisdiction.</p>
+						</a>
+					</div>
+					<div class="col-sm-12 col-md-4">
+						<a href="high" class="card p-5 text-center shadow-lg d-block">
+							<h5><i class="fas fa-landmark"></i> High Court</h5>
+							<p>File an Online Petition to High Court of the state to which the petitioner or concerned matter refers to for jurisdiction.</p>
+						</a>
+					</div>
+					<div class="col-sm-12 col-md-4">
+						<a href="supreme" class="card p-5 text-center shadow-lg d-block">
+							<h5><i class="fas fa-landmark"></i> Supreme Court</h5>
+							<p>File an Online PIL to the Supreme Court Of India by appropriately attaching the valid documents of previous lower court hearings.</p>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

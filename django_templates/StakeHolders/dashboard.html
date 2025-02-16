@@ -1,0 +1,134 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link rel="shortcut icon" type="image/png" href="{% static 'img/favicon.png' %}"/>
+		<title>Dashboard</title>
+		<!-- Halfmoon CSS -->
+		<link href="https://cdn.jsdelivr.net/npm/halfmoon@1.1.1/css/halfmoon-variables.min.css" rel="stylesheet" />
+		<!-- Halfmoon JS -->
+		<script src="https://cdn.jsdelivr.net/npm/halfmoon@1.1.1/js/halfmoon.min.js"></script>
+		<script src="https://kit.fontawesome.com/823e8efa26.js" crossorigin="anonymous"></script>
+		<style>
+			html, body {
+				height: 100%;
+				background-color: lightgray;
+			}
+			:root {
+				--lm-sidebar-bg-color: #1f1137;
+				--dm-sidebar-bg-color: #0a0612;
+				--lm-sidebar-link-text-color: lightgray;
+				--lm-sidebar-link-text-color-hover: white;
+				--lm-sidebar-icon-text-color: lightgray;
+				--lm-sidebar-icon-text-color-hover: white;
+				--lm-sidebar-brand-text-color: lightgray;
+				--lm-sidebar-brand-text-color-hover: white;
+				--lm-sidebar-title-text-color: lightgray;
+				--lm-sidebar-title-text-color-hover: white;
+				--lm-sidebar-icon-bg-color: #341d5c;
+				--lm-sidebar-icon-bg-color: #291749;
+				--lm-navbar-bg-color: #9457eb;
+				--dm-navbar-bg-color: #4c2882;
+				--lm-button-link-bg-color: #8a2be2;
+				--dm-button-link-bg-color: #8a2be2;
+				--lm-button-link-text-color: white;
+				--lm-button-link-text-color-hover: lightgray;
+				--dm-button-link-text-color: lightgray;
+				--dm-button-link-text-color-hover: white;
+			}
+			.active {
+				--lm-navbar-link-active-text-color: #fff;
+			}
+		</style>
+	</head>
+	<body data-set-preferred-mode-onload="true">
+		<div class="page-wrapper with-sidebar h-full">
+			<div class="sidebar">
+				<div class="sidebar-menu">
+					<div class="sidebar-brand">Welcome, {{ user.first_name }} {{ user.last_name }}</div>
+					<br />
+					<div class="sidebar-divider"></div>
+					<a href="/dashboard" class="sidebar-link sidebar-link-with-icon {% if page == None %}active{% endif %}">
+						<span class="sidebar-icon">
+							<i class="fas fa-tachometer-alt"></i>
+						</span>
+						Dashboard
+					</a>
+					<br />
+					{% if user.groups.get.name == 'Citizen' %}
+						<h5 class="sidebar-title font-weight-bold">E-License</h5>
+						<div class="sidebar-divider"></div>
+						<a href="applications" class="sidebar-link sidebar-link-with-icon {% if page == 'applications' %}active{% endif %}">
+							<span class="sidebar-icon">
+								<i class="fas fa-pen"></i>
+							</span>
+							Applications
+						</a>
+						<br />
+						<h5 class="sidebar-title font-weight-bold">Connect</h5>
+						<div class="sidebar-divider"></div>
+						<a href="lawyers" class="sidebar-link sidebar-link-with-icon {% if page == 'lawyers' %}active{% endif %}">
+							<span class="sidebar-icon">
+								<i class="fas fa-gavel"></i>
+							</span>
+							Lawyers
+						</a>
+						<br />
+					{% elif user.groups.get.name == 'Lawyer' %}
+						<h5 class="sidebar-title font-weight-bold">Connect</h5>
+						<div class="sidebar-divider"></div>
+						<a href="clients" class="sidebar-link sidebar-link-with-icon {% if page == 'clients' %}active{% endif %}">
+							<span class="sidebar-icon">
+								<i class="fas fa-users"></i>
+							</span>
+							Clients
+						</a>
+						<br />
+					{% endif %}
+					<h5 class="sidebar-title font-weight-bold">Petitions</h5>
+					<div class="sidebar-divider"></div>
+					<a href="petitions" class="sidebar-link sidebar-link-with-icon {% if page == 'petitions' %}active{% endif %}">
+						<span class="sidebar-icon">
+							<i class="fas fa-file-alt"></i>
+						</span>
+						Petitions
+					</a>
+				</div>
+			</div>
+			<div class="content-wrapper h-full">
+				<nav class="navbar">
+					<div class="navbar-content">
+						<button class="btn btn-link border rounded shadow" type="button" onclick="halfmoon.toggleSidebar()">
+							<i class="fas fa-bars"></i>
+						</button>				
+					</div>
+					<div class="navbar-content">
+						<a class="btn btn-link border rounded shadow" href="/" role="button">
+							<i class="fas fa-home"></i>
+						</a>				
+					</div>
+					<div class="navbar-content ml-auto">
+						<button class="btn btn-link border rounded shadow" type="button" onclick="halfmoon.toggleDarkMode()">
+							<i class="fas fa-moon"></i>
+						</button>				
+					</div>
+					<div class="navbar-content">
+						<a class="btn btn-link border rounded shadow" href="/signout">
+							<i class="fas fa-sign-out-alt"></i>
+						</a>				
+					</div>
+				</nav>
+				{% if page == None %}
+					{% include 'StakeHolders/default.html' %}
+				{% elif page == 'applications' %}
+					{% include 'StakeHolders/applications.html' %}
+				{% elif page == 'lawyers' or page == 'clients' %}
+					{% include 'StakeHolders/connect.html' %}
+				{% elif page == 'petitions' %}
+					{% include 'StakeHolders/petitions.html' %}
+				{% endif %}
+			</div>
+		</div>
+	</body>
+</html>
