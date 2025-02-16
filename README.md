@@ -52,7 +52,7 @@ The **system is a web-based platform** built with modern **frontend and backend 
 - **Fuzzy String Matching (FuzzyWuzzy)** – Improves search accuracy for legal queries.
 - **NLP Support (Spacy)** – Helps process legal text and user queries.
 
-![System Architecture Diagram](#) *(static/Architecture.jpg)*
+![System Architecture Diagram](static/Architecture.jpg)
 
 ---
 
